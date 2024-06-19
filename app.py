@@ -58,11 +58,12 @@ def stream():
             result = ""
             tokens_used = 0
             completion_tokens = 0
+            prompt = chat_history[-1]["content"]
             with client.chat.completions.create(
                 model=GPT_model,
                 messages=chat_history,
                 stream=True,
-                temperature=2.0,
+                temperature=0.8,
             ) as stream:
                 for chunk in stream:
                     if chunk.choices[0].delta and chunk.choices[0].delta.content:
@@ -71,9 +72,6 @@ def stream():
                         tokens_used += len(token_text.split())
                         completion_tokens += 1  # Assuming each streamed token is counted separately
                         # Set span attributes for each streamed part
-                        span.set_attribute("id", chunk.id)
-                        span.set_attribute("model", chunk.model)
-                        span.set_attribute("response_partial", token_text)
                         span.set_attribute("tokens_used_partial", tokens_used)
                         span.set_attribute("completion_tokens_partial", completion_tokens)
                         # Accumulate the content only if it's not None
@@ -84,6 +82,9 @@ def stream():
 
                 end_time = time.time()
                 latency = end_time - start_time
+                span.set_attribute("id", chunk.id)
+                span.set_attribute("model", chunk.model)
+                span.set_attribute("prompt", prompt)
                 span.set_attribute("response", result)
                 span.set_attribute("latency", latency)
                 span.set_attribute("tokens_used", tokens_used)
