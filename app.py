@@ -30,10 +30,12 @@ span_processor = BatchSpanProcessor(otlp_exporter)
 provider.add_span_processor(span_processor)
 
 chat_history = [
-    {"role": "system", "content": "Hello, I'm Shelli; I (actually) run The Splunk T-Shirt Company. AMA"},
+    {"role": "system", "content": "Hello, I'm Shelly's Assistant; I (actually) run The Splunk T-Shirt Company. AMA"},
 ]
 
 GPT_model = "gpt-3.5-turbo"
+GPT_temperature = 0.8
+GPT_top_p = 0.5
 
 @app.route("/", methods=["GET"])
 def index():
@@ -63,7 +65,8 @@ def stream():
                 model=GPT_model,
                 messages=chat_history,
                 stream=True,
-                temperature=0.8,
+                temperature=GPT_temperature,
+                top_p=GPT_top_p,
             ) as stream:
                 for chunk in stream:
                     if chunk.choices[0].delta and chunk.choices[0].delta.content:
@@ -83,7 +86,9 @@ def stream():
                 end_time = time.time()
                 latency = end_time - start_time
                 span.set_attribute("id", chunk.id)
-                span.set_attribute("model", chunk.model)
+                span.set_attribute("GPT-model", chunk.model)
+                span.set_attribute("GPT-temperature", GPT_temperature)
+                span.set_attribute("GPT-top_p", GPT_top_p)
                 span.set_attribute("prompt", prompt)
                 span.set_attribute("response", result)
                 span.set_attribute("latency", latency)
@@ -102,6 +107,7 @@ def stream():
 def reset_chat():
     global chat_history
     chat_history = [
-        {"role": "system", "content": "Hello, I'm Shelli; I (actually) run The Splunk T-Shirt Company. AMA"},
+        {"role": "system",
+         "content": "Hello, I'm Shelly's Assistant; I (actually) run The Splunk T-Shirt Company. AMA"},
     ]
     return jsonify(success=True)
