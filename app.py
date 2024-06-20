@@ -20,7 +20,7 @@ app = Flask(__name__)
 
 # Set up OpenTelemetry tracing
 resource = Resource(attributes={
-    SERVICE_NAME: "splunk-shelli"
+    SERVICE_NAME: "splunk-shelly-AI-assistant"
 })
 provider = TracerProvider(resource=resource)
 trace.set_tracer_provider(provider)
@@ -36,6 +36,7 @@ chat_history = [
 GPT_model = "gpt-3.5-turbo"
 GPT_temperature = 0.8
 GPT_top_p = 0.5
+
 
 @app.route("/", methods=["GET"])
 def index():
@@ -62,11 +63,11 @@ def stream():
             completion_tokens = 0
             prompt = chat_history[-1]["content"]
             with client.chat.completions.create(
-                model=GPT_model,
-                messages=chat_history,
-                stream=True,
-                temperature=GPT_temperature,
-                top_p=GPT_top_p,
+                    model=GPT_model,
+                    messages=chat_history,
+                    stream=True,
+                    temperature=GPT_temperature,
+                    top_p=GPT_top_p,
             ) as stream:
                 for chunk in stream:
                     if chunk.choices[0].delta and chunk.choices[0].delta.content:
