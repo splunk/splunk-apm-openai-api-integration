@@ -315,3 +315,16 @@ input[type="text"] {
   justify-content: center;
   align-items: center;
 }
+
+#clear-btn {
+  width: 42px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #c5c5d2;
+  background-color: #a3102d;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

@@ -1,7 +1,9 @@
 <!doctype html>
-<html>
+<html lang="en">
   <head>
-    <title>OpenAI Chat</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shelly's AI Assistant</title>
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='main.css') }}"
@@ -38,17 +40,15 @@
     </div>
     <div class="message-input-container">
       <form action="/chat" method="post">
-        <textarea
-          name="message"
-          placeholder="Type your message here..."
-          required
-        ></textarea>
+        <textarea name="message" placeholder="Type your message here..." required></textarea>
         <div class="button-group">
           <button type="submit" id="send-btn">&#x2191;</button>
+          <button type="button" id="clear-btn">&#x21bb;</button>
         </div>
       </form>
     </div>
     <script>
+      let activeSpanId; // Variable to store the active span ID
       document
         .querySelector("form")
         .addEventListener("submit", function (event) {
@@ -89,6 +89,7 @@
           })
             .then((response) => response.json())
             .then((data) => {
+              activeSpanId = data.span_id;
               if (data.success) {
                 const roleDiv = document.createElement("div");
                 roleDiv.classList.add("message-role");
@@ -119,13 +120,59 @@
                   // Scroll to the bottom of the chat container
                   chatContainer.scrollTop = chatContainer.scrollHeight;
                 };
+                // Append satisfaction buttons
+                const satisfactionDiv = document.createElement("div");
+                satisfactionDiv.classList.add("satisfaction-buttons");
+
+                const thumbsUpBtn = document.createElement("button");
+                thumbsUpBtn.textContent = "👍";
+                thumbsUpBtn.addEventListener("click", function () {
+                    sendSatisfaction(1);
+                });
+
+                const thumbsDownBtn = document.createElement("button");
+                thumbsDownBtn.textContent = "👎";
+                thumbsDownBtn.addEventListener("click", function () {
+                    sendSatisfaction(0);
+                });
+
+                satisfactionDiv.appendChild(thumbsUpBtn);
+                satisfactionDiv.appendChild(thumbsDownBtn);
+
+                chatContainer.appendChild(satisfactionDiv);
+
                 eventSource.onerror = function () {
                   eventSource.close();
                 };
+
+                // Store the active span ID when it is available
+                eventSource.addEventListener("span_id", function (event) {
+                  activeSpanId = event.data;
+                });
               }
             });
         });
 
+      function sendSatisfaction(score) {
+          fetch("/satisfaction", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              body: JSON.stringify({span_id: activeSpanId, score: score}),
+          })
+              .then((response) => {
+                  if (response.ok) {
+                      console.log("Successfully sent satisfaction score");
+                      // Optionally update UI to reflect satisfaction score
+                  } else {
+                      console.error("Failed to send satisfaction score.");
+                  }
+              })
+              .catch((error) => {
+                  console.error("Error sending satisfaction score:", error);
+              });
+      }
       // Add event listener for the clear button
       document
         .getElementById("clear-btn")
@@ -137,7 +184,7 @@
           // Re-insert the initial system message as an assistant message
           const systemMessageDiv = document.createElement("div");
           systemMessageDiv.classList.add("assistant-message"); // Use the assistant message class
-          systemMessageDiv.textContent = "You are a helpful assistant.";
+          systemMessageDiv.textContent = "Welcome Back!";
           chatContainer.appendChild(systemMessageDiv);
 
           // Reset the chat history on the server
