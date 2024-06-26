@@ -13,7 +13,7 @@ To start, I used the Instrumented Python frameworks for Splunk Observability Clo
 ### Building the Application with Flask
 
 ```
-from flask import (
+from flask import (
    Flask,
    render_template,
    request,
@@ -57,7 +57,7 @@ def reset_chat():...
 
 ### Instrumenting with OpenTelemetry
 Integrating OpenTelemetry into the Flask app to capture traces and spans:
-The Splunk distribution of OpenTelemetry Python Instrumentation provides a Python agent that automatically instruments your Python application to capture and report distributed traces to the Splunk Observability Cloud APM.
+[The Splunk distribution of OpenTelemetry Python](https://pypi.org/project/splunk-opentelemetry/) Instrumentation provides a Python agent that automatically instruments your Python application to capture and report distributed traces to the Splunk Observability Cloud APM.
 
 ```
 $ pip install splunk-opentelemetry[all]
@@ -113,9 +113,9 @@ def stream():
 
 Configure the Splunk Distribution of Otel Collector to receive and export metrics and traces to Splunk Observability Cloud.
 
-If you plan to run the collector on Linux, Windows, or Kubernetes, installing the collector is straightforward and all instructions are available here.
+If you plan to run the collector on Linux, Windows, or Kubernetes, installing the collector is straightforward and all instructions are available [here](https://docs.splunk.com/observability/en/gdi/opentelemetry/opentelemetry.html?_ga=2.181238113.731319086.1719204289-748138946.1589392422&_gl=1*ithg0a*_ga*NzQ4MTM4OTQ2LjE1ODkzOTI0MjI.*_ga_GS7YF8S63Y*MTcxOTM0NTc0MC41NDEuMC4xNzE5MzQ1NzQwLjYwLjAuMA..*_gcl_au*MzUxOTU1NDIwLjE3MTg2ODE0NjE.*FPAU*MjU2MzEyNTYwLjE3MTc3ODIzMjQ.*_ga_5EPM2P39FV*MTcxOTQxNzA5MC4xMDY1LjEuMTcxOTQxNzU0NC4wLjAuMTUwMDE1OTU5Nw..).
 
-If you’re like me, developing on a Mac, you have to build the custom binary. All steps to build and execute are available here. I have also included the agent and gateway configuration in my GitHub repo to help. Modify the parameters as you see fit.
+If you’re like me, developing on a Mac, you have to build the custom binary. All steps to build and execute are available [here](https://lantern.splunk.com/Observability/Product_Tips/Observability_Cloud/Running_the_Splunk_OpenTelemetry_Collector_on_Darwin). I have also included the agent and gateway configuration in my [GitHub](https://github.com/splunk/splunk-apm-openai-api-monitoring/tree/main/otel-config) repo to help. Modify the parameters as you see fit.
 
 And don’t forget to set the following environment variables.
 
